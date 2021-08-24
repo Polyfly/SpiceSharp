@@ -1,0 +1,18 @@
+{
+    "name": "SpiceSharp.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:78f3cadc8cc173148a7d554a81ff417b"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
