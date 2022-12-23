@@ -12,8 +12,9 @@ namespace SpiceSharp.Components.Mosfets.Level3
     /// </summary>
     /// <seealso cref="Frequency"/>
     /// <seealso cref="INoiseBehavior"/>
-    [BehaviorFor(typeof(Mosfet3), typeof(INoiseBehavior), 2)]
-    public class Noise : Frequency,
+    [BehaviorFor(typeof(Mosfet3)), AddBehaviorIfNo(typeof(INoiseBehavior)), BehaviorRequires(typeof(IMosfetBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Noise : Frequency,
         INoiseBehavior
     {
         private readonly INoiseSimulationState _state;
@@ -89,7 +90,6 @@ namespace SpiceSharp.Components.Mosfets.Level3
                  Math.Exp(ModelParameters.FlickerNoiseExponent *
                  Math.Log(Math.Max(Math.Abs(Behavior.Id), 1e-38))) /
                  (_state.Point.Value.Frequency * Behavior.Parameters.Width *
-                 Behavior.Parameters.ParallelMultiplier *
                  (Behavior.Parameters.Length - 2 * ModelParameters.LateralDiffusion) *
                  _properties.OxideCapFactor * _properties.OxideCapFactor));
         }

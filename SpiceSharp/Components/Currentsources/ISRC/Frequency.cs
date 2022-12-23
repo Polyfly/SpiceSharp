@@ -14,30 +14,24 @@ namespace SpiceSharp.Components.CurrentSources
     /// </summary>
     /// <seealso cref="Biasing"/>
     /// <seealso cref="IFrequencyBehavior"/>
-    [BehaviorFor(typeof(CurrentSource), typeof(IFrequencyBehavior), 1)]
-    public class Frequency : Biasing,
+    [BehaviorFor(typeof(CurrentSource)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [GeneratedParameters]
+    public partial class Frequency : Biasing,
         IFrequencyBehavior
     {
         private readonly IComplexSimulationState _complex;
         private readonly OnePort<Complex> _variables;
         private readonly ElementSet<Complex> _elements;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
-        [ParameterName("v"), ParameterInfo("Complex voltage")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
+        [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
         public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
-        [ParameterName("p"), ParameterInfo("Complex power")]
-        public Complex ComplexPower
-        {
-            get
-            {
-                var v = _variables.Positive.Value - _variables.Negative.Value;
-                return -v * Complex.Conjugate(Parameters.Phasor);
-            }
-        }
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
+        [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
+        public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(Parameters.Phasor);
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
         [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
         public Complex ComplexCurrent => Parameters.Phasor;
 
@@ -65,7 +59,7 @@ namespace SpiceSharp.Components.CurrentSources
         {
             // NOTE: Spice 3f5's documentation is IXXXX POS NEG VALUE but in the code it is IXXXX NEG POS VALUE
             // I solved it by inverting the current when loading the rhs vector
-            var value = Parameters.Phasor;
+            var value = Parameters.Phasor * Parameters.ParallelMultiplier;
             _elements.Add(-value, value);
         }
     }

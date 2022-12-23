@@ -15,8 +15,9 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
     /// <seealso cref="Biasing"/>
     /// <seealso cref="IFrequencyBehavior"/>
     /// <seealso cref="IBranchedBehavior{T}"/>
-    [BehaviorFor(typeof(VoltageControlledVoltageSource), typeof(IFrequencyBehavior), 1)]
-    public class Frequency : Biasing,
+    [BehaviorFor(typeof(VoltageControlledVoltageSource)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [GeneratedParameters]
+    public partial class Frequency : Biasing,
         IFrequencyBehavior,
         IBranchedBehavior<Complex>
     {
@@ -24,16 +25,16 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
         private readonly IComplexSimulationState _complex;
         private readonly ElementSet<Complex> _elements;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
-        [ParameterName("v"), ParameterInfo("Complex voltage")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
+        [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
         public Complex ComplexVoltage => _variables.Right.Positive.Value - _variables.Right.Negative.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
-        [ParameterName("i"), ParameterName("c"), ParameterInfo("Complex current")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
+        [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
         public Complex ComplexCurrent => Branch.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
-        [ParameterName("p"), ParameterInfo("Complex power")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
+        [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
         public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
 
         /// <inheritdoc/>

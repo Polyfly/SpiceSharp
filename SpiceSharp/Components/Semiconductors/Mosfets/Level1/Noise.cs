@@ -12,8 +12,9 @@ namespace SpiceSharp.Components.Mosfets.Level1
     /// </summary>
     /// <seealso cref="Frequency"/>
     /// <seealso cref="INoiseBehavior"/>
-    [BehaviorFor(typeof(Mosfet1), typeof(INoiseBehavior), 2)]
-    public class Noise : Frequency,
+    [BehaviorFor(typeof(Mosfet1)), AddBehaviorIfNo(typeof(INoiseBehavior)), BehaviorRequires(typeof(IMosfetBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Noise : Frequency,
         INoiseBehavior
     {
         private readonly INoiseSimulationState _state;
@@ -92,11 +93,12 @@ namespace SpiceSharp.Components.Mosfets.Level1
             _rd.Compute(Behavior.Properties.DrainConductance, Behavior.Parameters.Temperature);
             _rs.Compute(Behavior.Properties.SourceConductance, Behavior.Parameters.Temperature);
             _id.Compute(2.0 / 3.0 * Math.Abs(Behavior.Gm), Behavior.Parameters.Temperature);
-            _flicker.Compute(ModelParameters.FlickerNoiseCoefficient *
-                 Math.Exp(ModelParameters.FlickerNoiseExponent *
-                 Math.Log(Math.Max(Math.Abs(Behavior.Id), 1e-38))) /
-                 (_state.Point.Value.Frequency * Behavior.Parameters.Width * Behavior.Parameters.ParallelMultiplier *
-                 (Behavior.Parameters.Length - 2 * ModelParameters.LateralDiffusion) * coxSquared));
+            _flicker.Compute(
+                ModelParameters.FlickerNoiseCoefficient *
+                Math.Exp(ModelParameters.FlickerNoiseExponent *
+                Math.Log(Math.Max(Math.Abs(Behavior.Id), 1e-38))) /
+                (_state.Point.Value.Frequency * Behavior.Parameters.Width *
+                (Behavior.Parameters.Length - 2 * ModelParameters.LateralDiffusion) * coxSquared));
         }
     }
 }

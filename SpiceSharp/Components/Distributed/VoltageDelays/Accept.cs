@@ -11,8 +11,9 @@ namespace SpiceSharp.Components.VoltageDelays
     /// </summary>
     /// <seealso cref="Time"/>
     /// <seealso cref="IAcceptBehavior"/>
-    [BehaviorFor(typeof(VoltageDelay), typeof(IAcceptBehavior), 2)]
-    public class Accept : Time,
+    [BehaviorFor(typeof(VoltageDelay)), AddBehaviorIfNo(typeof(IAcceptBehavior))]
+    [GeneratedParameters]
+    public partial class Accept : Time,
         IAcceptBehavior
     {
         private double _oldSlope;

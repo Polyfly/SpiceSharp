@@ -12,8 +12,9 @@ namespace SpiceSharp.Components.Diodes
     /// </summary>
     /// <seealso cref="Frequency"/>
     /// <seealso cref="INoiseBehavior"/>
-    [BehaviorFor(typeof(Diode), typeof(INoiseBehavior), 3)]
-    public class Noise : Frequency,
+    [BehaviorFor(typeof(Diode)), AddBehaviorIfNo(typeof(INoiseBehavior))]
+    [GeneratedParameters]
+    public partial class Noise : Frequency,
         INoiseBehavior
     {
         private readonly INoiseSimulationState _state;

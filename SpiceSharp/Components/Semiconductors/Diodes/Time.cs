@@ -11,8 +11,9 @@ namespace SpiceSharp.Components.Diodes
     /// </summary>
     /// <seealso cref="Dynamic"/>
     /// <seealso cref="ITimeBehavior"/>
-    [BehaviorFor(typeof(Diode), typeof(ITimeBehavior), 2)]
-    public class Time : Dynamic,
+    [BehaviorFor(typeof(Diode)), AddBehaviorIfNo(typeof(ITimeBehavior))]
+    [GeneratedParameters]
+    public partial class Time : Dynamic,
         ITimeBehavior
     {
         private readonly IDerivative _capCharge;
@@ -59,6 +60,7 @@ namespace SpiceSharp.Components.Diodes
 
             // Calculate the capacitance
             var n = Parameters.SeriesMultiplier;
+            var m = Parameters.ParallelMultiplier;
             double vd = (Variables.PosPrime.Value - Variables.Negative.Value) / n;
             CalculateCapacitance(vd);
 
@@ -66,15 +68,12 @@ namespace SpiceSharp.Components.Diodes
             _capCharge.Value = LocalCapCharge;
             _capCharge.Derive();
             var info = _capCharge.GetContributions(LocalCapacitance, vd);
-            var geq = info.Jacobian;
-            var ceq = info.Rhs;
+            var geq = info.Jacobian * m / n;
+            var ceq = info.Rhs * m;
 
             // Store the current
             LocalCurrent += _capCharge.Derivative;
 
-            var m = Parameters.ParallelMultiplier;
-            geq *= m / n;
-            ceq *= m;
             Elements.Add(
                 // Y-matrix
                 0, geq, geq, -geq, -geq, 0, 0,

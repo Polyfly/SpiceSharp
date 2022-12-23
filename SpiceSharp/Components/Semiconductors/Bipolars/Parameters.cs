@@ -1,4 +1,5 @@
 using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Bipolars
 {
@@ -7,11 +8,8 @@ namespace SpiceSharp.Components.Bipolars
     /// </summary>
     /// <seealso cref="ParameterSet"/>
     [GeneratedParameters]
-    public class Parameters : ParameterSet
+    public partial class Parameters : ParameterSet<Parameters>
     {
-        private double _area = 1;
-        private GivenParameter<double> _temperature = new GivenParameter<double>(Constants.ReferenceTemperature, false);
-
         /// <summary>
         /// Gets or sets the temperature in degrees Celsius.
         /// </summary>
@@ -19,7 +17,7 @@ namespace SpiceSharp.Components.Bipolars
         /// The temperature in degrees Celsius.
         /// </value>
         [ParameterName("temp"), ParameterInfo("Instance temperature", Units = "\u00b0C")]
-        [DerivedProperty(), GreaterThan(Constants.CelsiusKelvin)]
+        [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double TemperatureCelsius
         {
             get => Temperature - Constants.CelsiusKelvin;
@@ -32,16 +30,8 @@ namespace SpiceSharp.Components.Bipolars
         /// <value>
         /// The temperature in degrees Kelvin.
         /// </value>
-        [GreaterThan(0)]
-        public GivenParameter<double> Temperature
-        {
-            get => _temperature;
-            set
-            {
-                Utility.GreaterThan(value, nameof(Temperature), 0);
-                _temperature = value;
-            }
-        }
+        [GreaterThan(0), Finite]
+        private GivenParameter<double> _temperature = new GivenParameter<double>(Constants.ReferenceTemperature, false);
 
         /// <summary>
         /// Gets or sets the area of the transistor.
@@ -50,16 +40,8 @@ namespace SpiceSharp.Components.Bipolars
         /// The area of the transistor.
         /// </value>
         [ParameterName("area"), ParameterInfo("Area factor", Units = "m^2")]
-        [GreaterThan(0)]
-        public double Area
-        {
-            get => _area;
-            set
-            {
-                Utility.GreaterThan(value, nameof(Area), 0);
-                _area = value;
-            }
-        }
+        [GreaterThan(0), Finite]
+        private double _area = 1;
 
         /// <summary>
         /// Gets or sets whether or not the device is initially off (non-conducting).
@@ -77,7 +59,8 @@ namespace SpiceSharp.Components.Bipolars
         /// The initial base-emitter voltage.
         /// </value>
         [ParameterName("icvbe"), ParameterInfo("Initial B-E voltage", Units = "V")]
-        public GivenParameter<double> InitialVoltageBe { get; set; }
+        [Finite]
+        private GivenParameter<double> _initialVoltageBe;
 
         /// <summary>
         /// Gets the initial collector-emitter voltage parameter.
@@ -86,7 +69,18 @@ namespace SpiceSharp.Components.Bipolars
         /// The initial collector-emitter voltage.
         /// </value>
         [ParameterName("icvce"), ParameterInfo("Initial C-E voltage", Units = "V")]
-        public GivenParameter<double> InitialVoltageCe { get; set; }
+        [Finite]
+        private GivenParameter<double> _initialVoltageCe;
+
+        /// <summary>
+        /// Gets or sets the number of bipolar transistors in parallel.
+        /// </summary>
+        /// <value>
+        /// The number of bipolar transistors in parallel.
+        /// </value>
+        [ParameterName("m"), ParameterInfo("Parallel multiplier")]
+        [GreaterThanOrEquals(0), Finite]
+        private double _parallelMultiplier = 1.0;
 
         /// <summary>
         /// Set initial conditions of the device.

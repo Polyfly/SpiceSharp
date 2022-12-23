@@ -12,10 +12,13 @@ namespace SpiceSharp.Components.Mosfets
     /// </summary>
     /// <seealso cref="Behavior"/>
     /// <seealso cref="ITimeBehavior"/>
-    [BehaviorFor(typeof(Mosfet1), typeof(ITimeBehavior))]
-    [BehaviorFor(typeof(Mosfet2), typeof(ITimeBehavior))]
-    [BehaviorFor(typeof(Mosfet3), typeof(ITimeBehavior))]
-    public class Time : Behavior,
+    [BehaviorFor(typeof(Mosfet1))]
+    [BehaviorFor(typeof(Mosfet2))]
+    [BehaviorFor(typeof(Mosfet3))]
+    [AddBehaviorIfNo(typeof(ITimeBehavior))]
+    [BehaviorRequires(typeof(IMosfetBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Time : Behavior,
         ITimeBehavior
     {
         private readonly ITimeSimulationState _time;

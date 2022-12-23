@@ -15,8 +15,9 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
     /// <seealso cref="Biasing" />
     /// <seealso cref="IFrequencyBehavior" />
     /// <seealso cref="IBranchedBehavior{T}" />
-    [BehaviorFor(typeof(CurrentControlledVoltageSource), typeof(IFrequencyBehavior), 1)]
-    public class Frequency : Biasing,
+    [BehaviorFor(typeof(CurrentControlledVoltageSource)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [GeneratedParameters]
+    public partial class Frequency : Biasing,
         IFrequencyBehavior,
         IBranchedBehavior<Complex>
     {
@@ -25,16 +26,16 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
         private readonly OnePort<Complex> _variables;
         private readonly IVariable<Complex> _control;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
-        [ParameterName("v"), ParameterInfo("Complex voltage")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
+        [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
         public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
-        [ParameterName("i"), ParameterName("c"), ParameterInfo("Complex current")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
+        [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
         public Complex ComplexCurrent => Branch.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
-        [ParameterName("p"), ParameterInfo("Complex power")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
+        [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
         public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
 
         /// <inheritdoc/>

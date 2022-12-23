@@ -14,24 +14,25 @@ namespace SpiceSharp.Components.VoltageControlledCurrentSources
     /// </summary>
     /// <seealso cref="BiasingBehavior"/>
     /// <seealso cref="IFrequencyBehavior"/>
-    [BehaviorFor(typeof(VoltageControlledCurrentSource), typeof(IFrequencyBehavior), 1)]
-    public class FrequencyBehavior : BiasingBehavior,
+    [BehaviorFor(typeof(VoltageControlledCurrentSource)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [GeneratedParameters]
+    public partial class FrequencyBehavior : BiasingBehavior,
         IFrequencyBehavior
     {
         private readonly IComplexSimulationState _complex;
         private readonly ElementSet<Complex> _elements;
         private readonly TwoPort<Complex> _variables;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
-        [ParameterName("v"), ParameterInfo("Complex voltage")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
+        [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
         public Complex ComplexVoltage => _variables.Right.Positive.Value - _variables.Right.Negative.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
-        [ParameterName("i"), ParameterName("c"), ParameterInfo("Complex current")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
+        [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
         public Complex ComplexCurrent => (_variables.Left.Positive.Value - _variables.Left.Negative.Value) * Parameters.Transconductance;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
-        [ParameterName("p"), ParameterInfo("Power")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
+        [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Power")]
         public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace SpiceSharp.Components.VoltageControlledCurrentSources
         /// <inheritdoc/>
         void IFrequencyBehavior.Load()
         {
-            var value = Parameters.Transconductance;
+            var value = Parameters.Transconductance * Parameters.ParallelMultiplier;
             _elements.Add(value, -value, -value, value);
         }
     }

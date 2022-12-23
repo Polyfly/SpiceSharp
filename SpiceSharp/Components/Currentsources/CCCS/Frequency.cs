@@ -14,8 +14,9 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
     /// </summary>
     /// <seealso cref="Biasing"/>
     /// <seealso cref="IFrequencyBehavior"/>
-    [BehaviorFor(typeof(CurrentControlledCurrentSource), typeof(IFrequencyBehavior), 1)]
-    public class Frequency : Biasing,
+    [BehaviorFor(typeof(CurrentControlledCurrentSource)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [GeneratedParameters]
+    public partial class Frequency : Biasing,
         IFrequencyBehavior
     {
         private readonly OnePort<Complex> _variables;
@@ -23,16 +24,16 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
         private readonly ElementSet<Complex> _elements;
         private readonly IVariable<Complex> _control;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
-        [ParameterName("v"), ParameterInfo("Complex voltage")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Voltage/*'/>
+        [ParameterName("v"), ParameterName("v_c"), ParameterInfo("Complex voltage")]
         public Complex ComplexVoltage => _variables.Positive.Value - _variables.Negative.Value;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
-        [ParameterName("i"), ParameterName("c"), ParameterInfo("Complex current")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Current/*'/>
+        [ParameterName("i"), ParameterName("c"), ParameterName("i_c"), ParameterInfo("Complex current")]
         public Complex ComplexCurrent => _control.Value * Parameters.Coefficient;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
-        [ParameterName("p"), ParameterInfo("Complex power")]
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="frequency"]/Power/*'/>
+        [ParameterName("p"), ParameterName("p_c"), ParameterInfo("Complex power")]
         public Complex ComplexPower => -ComplexVoltage * Complex.Conjugate(ComplexCurrent);
 
         /// <summary>
@@ -44,6 +45,7 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
             : base(context)
         {
             _complex = context.GetState<IComplexSimulationState>();
+            var behavior = context.Behaviors.GetValue<Biasing>();
 
             _variables = new OnePort<Complex>(_complex, context);
             _control = context.ControlBehaviors.GetValue<IBranchedBehavior<Complex>>().Branch;
@@ -62,7 +64,7 @@ namespace SpiceSharp.Components.CurrentControlledCurrentSources
 
         void IFrequencyBehavior.Load()
         {
-            var value = Parameters.Coefficient;
+            var value = Parameters.Coefficient * Parameters.ParallelMultiplier;
             _elements.Add(value, -value);
         }
     }

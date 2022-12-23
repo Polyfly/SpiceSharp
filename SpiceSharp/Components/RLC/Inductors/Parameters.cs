@@ -1,4 +1,5 @@
 using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Inductors
 {
@@ -7,12 +8,8 @@ namespace SpiceSharp.Components.Inductors
     /// </summary>
     /// <seealso cref="ParameterSet" />
     [GeneratedParameters]
-    public class Parameters : ParameterSet
+    public partial class Parameters : ParameterSet<Parameters>
     {
-        private double _seriesMultiplier = 1.0;
-        private double _parallelMultiplier = 1.0;
-        private double _inductance;
-
         /// <summary>
         /// Gets the inductance parameter.
         /// </summary>
@@ -20,16 +17,8 @@ namespace SpiceSharp.Components.Inductors
         /// The inductance.
         /// </value>
         [ParameterName("inductance"), ParameterInfo("Inductance of the inductor", Units = "H", IsPrincipal = true)]
-        [GreaterThanOrEquals(0)]
-        public double Inductance
-        {
-            get => _inductance;
-            set
-            {
-                Utility.GreaterThanOrEquals(value, nameof(Inductance), 0);
-                _inductance = value;
-            }
-        }
+        [GreaterThanOrEquals(0), Finite]
+        private double _inductance;
 
         /// <summary>
         /// Gets the initial current parameter.
@@ -38,7 +27,8 @@ namespace SpiceSharp.Components.Inductors
         /// The initial current.
         /// </value>
         [ParameterName("ic"), ParameterInfo("Initial current through the inductor", Units = "V", Interesting = false)]
-        public GivenParameter<double> InitialCondition { get; set; }
+        [Finite]
+        private GivenParameter<double> _initialCondition;
 
         /// <summary>
         /// Gets or sets the parallel multiplier.
@@ -47,16 +37,8 @@ namespace SpiceSharp.Components.Inductors
         /// The parallel multiplier.
         /// </value>
         [ParameterName("m"), ParameterInfo("Parallel multiplier")]
-        [GreaterThan(0)]
-        public double ParallelMultiplier
-        {
-            get => _parallelMultiplier;
-            set
-            {
-                Utility.GreaterThan(value, nameof(ParallelMultiplier), 0);
-                _parallelMultiplier = value;
-            }
-        }
+        [GreaterThan(0), Finite]
+        private double _parallelMultiplier = 1.0;
 
         /// <summary>
         /// Gets or sets the series multiplier.
@@ -65,15 +47,7 @@ namespace SpiceSharp.Components.Inductors
         /// The series multiplier.
         /// </value>
         [ParameterName("n"), ParameterInfo("Series multiplier")]
-        [GreaterThanOrEquals(0)]
-        public double SeriesMultiplier
-        {
-            get => _seriesMultiplier;
-            set
-            {
-                Utility.GreaterThanOrEquals(value, nameof(SeriesMultiplier), 0);
-                _seriesMultiplier = value;
-            }
-        }
+        [GreaterThanOrEquals(0), Finite]
+        private double _seriesMultiplier = 1.0;
     }
 }

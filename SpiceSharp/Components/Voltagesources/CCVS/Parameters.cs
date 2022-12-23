@@ -1,4 +1,5 @@
 ﻿using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.CurrentControlledVoltageSources
 {
@@ -6,7 +7,8 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
     /// Base parameters for a <see cref="CurrentControlledVoltageSource"/>
     /// </summary>
     /// <seealso cref="ParameterSet"/>
-    public class Parameters : ParameterSet
+    [GeneratedParameters]
+    public partial class Parameters : ParameterSet<Parameters>
     {
         /// <summary>
         /// Gets or sets the transresistance gain.
@@ -15,6 +17,7 @@ namespace SpiceSharp.Components.CurrentControlledVoltageSources
         /// The transresistance gain.
         /// </value>
         [ParameterName("gain"), ParameterInfo("Transresistance (gain)")]
-        public double Coefficient { get; set; }
+        [Finite]
+        private double _coefficient;
     }
 }

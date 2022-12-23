@@ -11,7 +11,7 @@ namespace SpiceSharp.Components.JFETs
     /// </summary>
     /// <seealso cref="Biasing"/>
     /// <seealso cref="ITimeBehavior"/>
-    [BehaviorFor(typeof(JFET), typeof(ITimeBehavior), 2)]
+    [BehaviorFor(typeof(JFET)), AddBehaviorIfNo(typeof(ITimeBehavior))]
     public class Time : Biasing,
         ITimeBehavior
     {
@@ -96,9 +96,12 @@ namespace SpiceSharp.Components.JFETs
             var cd = -_qgd.Derivative;
             var cgd = _qgd.Derivative;
 
-            var ceqgd = ModelParameters.JFETType * (cgd - ggd * vgd);
-            var ceqgs = ModelParameters.JFETType * (cg - cgd - ggs * vgs);
-            var cdreq = ModelParameters.JFETType * (cd + cgd);
+            var m = Parameters.ParallelMultiplier;
+            ggd *= m;
+            ggs *= m;
+            var ceqgd = ModelParameters.JFETType * (cgd - ggd * vgd) * m;
+            var ceqgs = ModelParameters.JFETType * (cg - cgd - ggs * vgs) * m;
+            var cdreq = ModelParameters.JFETType * (cd + cgd) * m;
 
             _elements.Add(
                 // Y-matrix
@@ -106,7 +109,7 @@ namespace SpiceSharp.Components.JFETs
                 -ggs,
                 -ggd,
                 -ggs,
-                ggd + ggs,
+                (ggd + ggs),
                 ggd,
                 ggs,
                 // RHS vector

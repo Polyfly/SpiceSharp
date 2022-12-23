@@ -14,8 +14,9 @@ namespace SpiceSharp.Components.Diodes
     /// <seealso cref="Temperature"/>
     /// <seealso cref="IBiasingBehavior"/>
     /// <seealso cref="IConvergenceBehavior"/>
-    [BehaviorFor(typeof(Diode), typeof(IBiasingBehavior), 1)]
-    public class Biasing : Temperature,
+    [BehaviorFor(typeof(Diode)), AddBehaviorIfNo(typeof(IBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Biasing : Temperature,
         IBiasingBehavior,
         IConvergenceBehavior
     {
@@ -31,7 +32,7 @@ namespace SpiceSharp.Components.Diodes
         /// </summary>
         protected readonly ElementSet<double> Elements;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Voltage/*'/>
         /// <remarks>
         /// If the series multiplier is set, then this voltage is the sum of all voltage drops over all the
         /// diodes in series.
@@ -39,7 +40,7 @@ namespace SpiceSharp.Components.Diodes
         [ParameterName("v"), ParameterName("vd"), ParameterInfo("The voltage across the internal diode")]
         public double Voltage => LocalVoltage * Parameters.SeriesMultiplier;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Current/*'/>
         /// <remarks>
         /// If the parallel multiplier is set, then this current is the sum of all currents through all the
         /// diodes in parallel.
@@ -56,7 +57,7 @@ namespace SpiceSharp.Components.Diodes
         [ParameterName("gd"), ParameterInfo("Small-signal conductance")]
         public double Conductance => LocalConductance * Parameters.ParallelMultiplier;
 
-        /// <include file='../../Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
+        /// <include file='./Components/Common/docs.xml' path='docs/members[@name="biasing"]/Power/*'/>
         /// <remarks>
         /// The power does not take into account losses by parasitic series resistors.
         /// </remarks>

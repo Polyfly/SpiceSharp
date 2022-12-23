@@ -12,7 +12,7 @@ namespace SpiceSharp.Components.Bipolars
     /// </summary>
     /// <seealso cref="Dynamic"/>
     /// <seealso cref="IFrequencyBehavior"/>
-    [BehaviorFor(typeof(BipolarJunctionTransistor), typeof(IFrequencyBehavior), 2)]
+    [BehaviorFor(typeof(BipolarJunctionTransistor)), AddBehaviorIfNo(typeof(IFrequencyBehavior))]
     public class Frequency : Dynamic,
         IFrequencyBehavior
     {
@@ -43,6 +43,24 @@ namespace SpiceSharp.Components.Bipolars
         /// The internal emitter node.
         /// </value>
         protected new IVariable<Complex> EmitterPrime { get; private set; }
+
+        /// <summary>
+        /// Gets the base-emitter voltage.
+        /// </summary>
+        /// <value>
+        /// The base-emitter voltage.
+        /// </value>
+        [ParameterName("vbe"), ParameterInfo("Complex B-E voltage")]
+        public Complex ComplexVoltageBe => _complex.Solution[_basePrimeNode] - _complex.Solution[_emitterPrimeNode];
+
+        /// <summary>
+        /// Gets the base-collector voltage.
+        /// </summary>
+        /// <value>
+        /// The base-collector voltage.
+        /// </value>
+        [ParameterName("vbc"), ParameterInfo("Complex B-C voltage")]
+        public Complex ComplexVoltageBc => _complex.Solution[_basePrimeNode] - _complex.Solution[_collectorPrimeNode];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Frequency"/> class.
@@ -139,30 +157,31 @@ namespace SpiceSharp.Components.Bipolars
             var xccs = CapCs * cstate.Laplace;
             var xcmcb = Geqcb * cstate.Laplace;
 
+            var m = Parameters.ParallelMultiplier;
             _elements.Add(
-                gcpr,
-                gx + xcbx,
-                gepr,
-                gmu + go + gcpr + xcmu + xccs + xcbx,
-                gx + gpi + gmu + xcpi + xcmu + xcmcb,
-                gpi + gepr + gm + go + xcpi,
-                -gcpr,
-                -gx,
-                -gepr,
-                -gcpr,
-                -gmu + gm - xcmu,
-                -gm - go,
-                -gx,
-                -gmu - xcmu - xcmcb,
-                -gpi - xcpi,
-                -gepr,
-                -go + xcmcb,
-                -gpi - gm - xcpi - xcmcb,
-                xccs,
-                -xccs,
-                -xccs,
-                -xcbx,
-                -xcbx);
+                gcpr * m,
+                (gx + xcbx) * m,
+                gepr * m,
+                (gmu + go + gcpr + xcmu + xccs + xcbx) * m,
+                (gx + gpi + gmu + xcpi + xcmu + xcmcb) * m,
+                (gpi + gepr + gm + go + xcpi) * m,
+                -gcpr * m,
+                -gx * m,
+                -gepr * m,
+                -gcpr * m,
+                (-gmu + gm - xcmu) * m,
+                (-gm - go) * m,
+                -gx * m,
+                (-gmu - xcmu - xcmcb) * m,
+                (-gpi - xcpi) * m,
+                -gepr * m,
+                (-go + xcmcb) * m,
+                (-gpi - gm - xcpi - xcmcb) * m,
+                xccs * m,
+                -xccs * m,
+                -xccs * m,
+                -xcbx * m,
+                -xcbx * m);
         }
     }
 }

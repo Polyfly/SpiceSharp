@@ -1,4 +1,5 @@
 using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.JFETs
 {
@@ -7,12 +8,8 @@ namespace SpiceSharp.Components.JFETs
     /// </summary>
     /// <seealso cref="ParameterSet" />
     [GeneratedParameters]
-    public class Parameters : ParameterSet
+    public partial class Parameters : ParameterSet<Parameters>
     {
-        private double _area = 1;
-        private GivenParameter<double> _temperature = new GivenParameter<double>(300.15, false);
-        private double _temperatureCelsius;
-
         /// <summary>
         /// Gets or sets the temperature in degrees celsius.
         /// </summary>
@@ -20,15 +17,11 @@ namespace SpiceSharp.Components.JFETs
         /// The temperature in degrees Celsius.
         /// </value>
         [ParameterName("temp"), ParameterInfo("Instance temperature", Units = "\u00b0C")]
-        [GreaterThan(Constants.CelsiusKelvin)]
+        [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin), Finite]
         public double TemperatureCelsius
         {
-            get => _temperatureCelsius;
-            set
-            {
-                Utility.GreaterThan(value, nameof(TemperatureCelsius), Constants.CelsiusKelvin);
-                _temperatureCelsius = value;
-            }
+            get => Temperature - Constants.CelsiusKelvin;
+            set => Temperature = value + Constants.CelsiusKelvin;
         }
 
         /// <summary>
@@ -37,16 +30,8 @@ namespace SpiceSharp.Components.JFETs
         /// <value>
         /// The temperature in degrees Kelvin.
         /// </value>
-        [GreaterThan(0)]
-        public GivenParameter<double> Temperature
-        {
-            get => _temperature;
-            set
-            {
-                Utility.GreaterThan(value, nameof(Temperature), 0);
-                _temperature = value;
-            }
-        }
+        [GreaterThan(0), Finite]
+        private GivenParameter<double> _temperature = new GivenParameter<double>(300.15, false);
 
         /// <summary>
         /// Gets or sets the area.
@@ -55,16 +40,8 @@ namespace SpiceSharp.Components.JFETs
         /// The area.
         /// </value>
         [ParameterName("area"), ParameterInfo("Area factor", Units = "m^2")]
-        [GreaterThanOrEquals(0)]
-        public double Area
-        {
-            get => _area;
-            set
-            {
-                Utility.GreaterThanOrEquals(value, nameof(Area), 0);
-                _area = value;
-            }
-        }
+        [GreaterThanOrEquals(0), Finite]
+        private double _area = 1;
 
         /// <summary>
         /// Gets or sets the initial drain-source voltage.
@@ -73,7 +50,8 @@ namespace SpiceSharp.Components.JFETs
         /// The initial drain-source voltage.
         /// </value>
         [ParameterName("ic-vds"), ParameterInfo("Initial D-S voltage", Units = "V")]
-        public GivenParameter<double> InitialVds { get; set; }
+        [Finite]
+        private GivenParameter<double> _initialVds;
 
         /// <summary>
         /// Gets or sets the initial gate-source voltage.
@@ -82,7 +60,8 @@ namespace SpiceSharp.Components.JFETs
         /// The initial gate-source voltage.
         /// </value>
         [ParameterName("ic-vgs"), ParameterInfo("Initial G-S voltage", Units = "V")]
-        public GivenParameter<double> InitialVgs { get; set; }
+        [Finite]
+        private GivenParameter<double> _initialVgs;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is off.
@@ -92,6 +71,16 @@ namespace SpiceSharp.Components.JFETs
         /// </value>
         [ParameterName("off"), ParameterInfo("Device initially off")]
         public bool Off { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of JFETs in parallel.
+        /// </summary>
+        /// <value>
+        /// The number of JFETs in parallel.
+        /// </value>
+        [ParameterName("m"), ParameterInfo("Parallel multiplier")]
+        [GreaterThanOrEquals(0), Finite]
+        private double _parallelMultiplier = 1.0;
 
         /// <summary>
         /// Sets the initial conditions of the JFET.

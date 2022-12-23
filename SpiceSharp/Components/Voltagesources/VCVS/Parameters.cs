@@ -1,4 +1,5 @@
 ﻿using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.VoltageControlledVoltageSources
 {
@@ -6,7 +7,8 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
     /// Base parameters for a <see cref="VoltageControlledVoltageSource"/>
     /// </summary>
     /// <seealso cref="ParameterSet"/>
-    public class Parameters : ParameterSet
+    [GeneratedParameters]
+    public partial class Parameters : ParameterSet<Parameters>
     {
         /// <summary>
         /// Gets or sets the voltage gain.
@@ -15,6 +17,7 @@ namespace SpiceSharp.Components.VoltageControlledVoltageSources
         /// The voltage gain.
         /// </value>
         [ParameterName("gain"), ParameterInfo("Voltage gain")]
-        public double Coefficient { get; set; }
+        [Finite]
+        private double _coefficient;
     }
 }

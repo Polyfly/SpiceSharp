@@ -13,8 +13,9 @@ namespace SpiceSharp.Components.Bipolars
     /// </summary>
     /// <seealso cref="Dynamic"/>
     /// <seealso cref="ITimeBehavior"/>
-    [BehaviorFor(typeof(BipolarJunctionTransistor), typeof(ITimeBehavior), 2)]
-    public class Time : Dynamic,
+    [BehaviorFor(typeof(BipolarJunctionTransistor)), AddBehaviorIfNo(typeof(ITimeBehavior))]
+    [GeneratedParameters]
+    public partial class Time : Dynamic,
         ITimeBehavior
     {
         private readonly IDerivative _biasingStateChargeBe, _biasingStateChargeBc, _biasingStateChargeCs, _biasingStateChargeBx;
@@ -207,28 +208,29 @@ namespace SpiceSharp.Components.Bipolars
             var ceqbe = ModelParameters.BipolarType * (cc + cb - vbe * gpi + vbc * -geqcb);
             var ceqbc = ModelParameters.BipolarType * (-cc + -vbc * gmu);
 
+            var m = Parameters.ParallelMultiplier;
             _elements.Add(
                 // Y-matrix
-                geqbx,
-                gmu + gccs + geqbx,
-                gpi + gmu + geqcb,
-                gpi,
-                -gmu,
-                -gmu - geqcb,
-                -gpi,
-                geqcb,
-                -gpi - geqcb,
-                gccs,
-                -gccs,
-                -gccs,
-                -geqbx,
-                -geqbx,
+                geqbx * m,
+                (gmu + gccs + geqbx) * m,
+                (gpi + gmu + geqcb) * m,
+                gpi * m,
+                -gmu * m,
+                (-gmu - geqcb) * m,
+                -gpi * m,
+                geqcb * m,
+                (-gpi - geqcb) * m,
+                gccs * m,
+                -gccs * m,
+                -gccs * m,
+                -geqbx * m,
+                -geqbx * m,
                 // RHS vector
-                -ceqbx,
-                -ceqcs,
-                ceqcs + ceqbx + ceqbc,
-                -ceqbe - ceqbc,
-                ceqbe);
+                -ceqbx * m,
+                -ceqcs * m,
+                (ceqcs + ceqbx + ceqbc) * m,
+                (-ceqbe - ceqbc) * m,
+                ceqbe * m);
         }
 
         /// <inheritdoc/>

@@ -1,4 +1,5 @@
 using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Resistors
 {
@@ -7,19 +8,16 @@ namespace SpiceSharp.Components.Resistors
     /// </summary>
     /// <seealso cref="ParameterSet"/>
     [GeneratedParameters]
-    public class ModelParameters : ParameterSet
+    public partial class ModelParameters : ParameterSet<ModelParameters>
     {
-        private double _defaultWidth = 10e-6;
-        private GivenParameter<double> _nominalTemperature = new GivenParameter<double>(Constants.ReferenceTemperature, false);
-
         /// <summary>
         /// Gets or sets the nominal temperature in degrees Celsius.
         /// </summary>
         /// <value>
         /// The nominal temperature in degrees Celsius.
         /// </value>
-        [ParameterName("tnom"), DerivedProperty(), ParameterInfo("Parameter measurement temperature", Units = "\u00b0C", Interesting = false)]
-        [GreaterThan(Constants.CelsiusKelvin)]
+        [ParameterName("tnom"), ParameterInfo("Parameter measurement temperature", Units = "\u00b0C", Interesting = false)]
+        [DerivedProperty, GreaterThan(-Constants.CelsiusKelvin)]
         public double NominalTemperatureCelsius
         {
             get => NominalTemperature - Constants.CelsiusKelvin;
@@ -33,15 +31,7 @@ namespace SpiceSharp.Components.Resistors
         /// The nominal temperature in degrees Kelvin.
         /// </value>
         [GreaterThan(0)]
-        public GivenParameter<double> NominalTemperature
-        {
-            get => _nominalTemperature;
-            set
-            {
-                Utility.GreaterThan(value, nameof(NominalTemperature), 0);
-                _nominalTemperature = value;
-            }
-        }
+        private GivenParameter<double> _nominalTemperature = new GivenParameter<double>(Constants.ReferenceTemperature, false);
 
         /// <summary>
         /// Gets or sets the first-order temperature coefficient parameter.
@@ -87,15 +77,7 @@ namespace SpiceSharp.Components.Resistors
         /// </value>
         [ParameterName("defw"), ParameterInfo("Default device width", Units = "m")]
         [GreaterThan(0)]
-        public double DefaultWidth
-        {
-            get => _defaultWidth;
-            set
-            {
-                Utility.GreaterThan(value, nameof(DefaultWidth), 0);
-                _defaultWidth = value;
-            }
-        }
+        private double _defaultWidth = 10e-6;
 
         /// <summary>
         /// Gets or sets the narrowing coefficient.

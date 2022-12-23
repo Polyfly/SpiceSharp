@@ -14,8 +14,9 @@ namespace SpiceSharp.Components.Mosfets.Level1
     /// <seealso cref="Temperature"/>
     /// <seealso cref="IBiasingBehavior"/>
     /// <seealso cref="IConvergenceBehavior"/>
-    [BehaviorFor(typeof(Mosfet1), typeof(IBiasingBehavior), 4)]
-    public class Biasing : Temperature,
+    [BehaviorFor(typeof(Mosfet1)), AddBehaviorIfNo(typeof(IBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Biasing : Temperature,
         IMosfetBiasingBehavior,
         IConvergenceBehavior
     {
@@ -130,18 +131,19 @@ namespace SpiceSharp.Components.Mosfets.Level1
             con.Reset();
 
             var vt = Constants.KOverQ * Parameters.Temperature;
+            var m = Parameters.ParallelMultiplier;
             double DrainSatCur, SourceSatCur;
             if ((Properties.TempSatCurDensity == 0) || (Parameters.DrainArea == 0) || (Parameters.SourceArea == 0))
             {
-                DrainSatCur = Parameters.ParallelMultiplier * Properties.TempSatCur;
-                SourceSatCur = Parameters.ParallelMultiplier * Properties.TempSatCur;
+                DrainSatCur = m * Properties.TempSatCur;
+                SourceSatCur = m * Properties.TempSatCur;
             }
             else
             {
-                DrainSatCur = Properties.TempSatCurDensity * Parameters.ParallelMultiplier * Parameters.DrainArea;
-                SourceSatCur = Properties.TempSatCurDensity * Parameters.ParallelMultiplier * Parameters.SourceArea;
+                DrainSatCur = Properties.TempSatCurDensity * m * Parameters.DrainArea;
+                SourceSatCur = Properties.TempSatCurDensity * m  * Parameters.SourceArea;
             }
-            var Beta = Properties.TempTransconductance * Parameters.ParallelMultiplier * Parameters.Width / Properties.EffectiveLength;
+            var Beta = Properties.TempTransconductance * m * Parameters.Width / Properties.EffectiveLength;
 
             // Get the current voltages
             Initialize(out double vgs, out var vds, out var vbs, out var check);

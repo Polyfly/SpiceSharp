@@ -13,10 +13,13 @@ namespace SpiceSharp.Components.Mosfets
     /// </summary>
     /// <seealso cref="Behavior"/>
     /// <seealso cref="IFrequencyBehavior"/>
-    [BehaviorFor(typeof(Mosfet1), typeof(IFrequencyBehavior), 1)]
-    [BehaviorFor(typeof(Mosfet2), typeof(IFrequencyBehavior), 1)]
-    [BehaviorFor(typeof(Mosfet3), typeof(IFrequencyBehavior), 1)]
-    public class Frequency : Behavior,
+    [BehaviorFor(typeof(Mosfet1))]
+    [BehaviorFor(typeof(Mosfet2))]
+    [BehaviorFor(typeof(Mosfet3))]
+    [AddBehaviorIfNo(typeof(IFrequencyBehavior))]
+    [BehaviorRequires(typeof(IMosfetBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Frequency : Behavior,
         IFrequencyBehavior
     {
         private readonly ElementSet<Complex> _elements;
@@ -89,9 +92,9 @@ namespace SpiceSharp.Components.Mosfets
             }
 
             // Charge oriented model parameters
-            var gateSourceOverlapCap = ModelParameters.GateSourceOverlapCapFactor * Behavior.Parameters.Width;
-            var gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor * Behavior.Parameters.Width;
-            var gateBulkOverlapCap = ModelParameters.GateBulkOverlapCapFactor * Behavior.Properties.EffectiveLength;
+            var gateSourceOverlapCap = ModelParameters.GateSourceOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
+            var gateDrainOverlapCap = ModelParameters.GateDrainOverlapCapFactor  * Behavior.Parameters.ParallelMultiplier * Behavior.Parameters.Width;
+            var gateBulkOverlapCap = ModelParameters.GateBulkOverlapCapFactor * Behavior.Parameters.ParallelMultiplier * Behavior.Properties.EffectiveLength;
 
             // Meyer"s model parameters
             var capgs = _charges.Cgs * 2 + gateSourceOverlapCap;

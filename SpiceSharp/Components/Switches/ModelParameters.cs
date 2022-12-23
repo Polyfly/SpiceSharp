@@ -1,11 +1,12 @@
 ﻿using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Switches
 {
     /// <summary>
     /// Base parameters for a switch model.
     /// </summary>
-    public class ModelParameters : ParameterSet
+    public partial class ModelParameters : ParameterSet<ModelParameters>
     {
         /// <summary>
         /// Gets the resistance parameter when closed.
@@ -14,7 +15,8 @@ namespace SpiceSharp.Components.Switches
         /// The on resistance.
         /// </value>
         [ParameterName("ron"), ParameterInfo("Closed resistance")]
-        public double OnResistance { get; set; } = 1;
+        [Finite]
+        private double _onResistance = 1;
 
         /// <summary>
         /// Gets the resistance parameter when open.
@@ -23,7 +25,8 @@ namespace SpiceSharp.Components.Switches
         /// The off resistance.
         /// </value>
         [ParameterName("roff"), ParameterInfo("Open resistance")]
-        public double OffResistance { get; set; } = 1e12;
+        [Finite]
+        private double _offResistance = 1e12;
 
         /// <summary>
         /// Gets the threshold parameter.

@@ -1,4 +1,5 @@
 ﻿using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.MutualInductances
 {
@@ -6,7 +7,8 @@ namespace SpiceSharp.Components.MutualInductances
     /// Base parameters for a <see cref="MutualInductance"/>
     /// </summary>
     /// <seealso cref="ParameterSet"/>
-    public class Parameters : ParameterSet
+    [GeneratedParameters]
+    public partial class Parameters : ParameterSet<Parameters>
     {
         /// <summary>
         /// Gets or sets the coupling coefficient.
@@ -19,6 +21,7 @@ namespace SpiceSharp.Components.MutualInductances
         /// the inductors. The mutual inductance can be computed using M = k*sqrt(L1*L2).
         /// </remarks>
         [ParameterName("k"), ParameterName("coefficient"), ParameterInfo("Coupling coefficient", IsPrincipal = true)]
-        public GivenParameter<double> Coupling { get; set; }
+        [Finite]
+        private GivenParameter<double> _coupling;
     }
 }

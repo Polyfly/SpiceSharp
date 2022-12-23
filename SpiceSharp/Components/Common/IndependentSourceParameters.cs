@@ -1,6 +1,7 @@
 ﻿using SpiceSharp.ParameterSets;
 using System;
 using System.Numerics;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.CommonBehaviors
 {
@@ -8,8 +9,8 @@ namespace SpiceSharp.Components.CommonBehaviors
     /// Parameters that are common to an independent source.
     /// </summary>
     /// <seealso cref="ParameterSet"/>
-    [GeneratedParameters(AddNames = true, AddRules = false)]
-    public partial class IndependentSourceParameters : ParameterSet
+    [GeneratedParameters]
+    public partial class IndependentSourceParameters : ParameterSet<IndependentSourceParameters>
     {
         /// <summary>
         /// The DC value of the source.
@@ -18,7 +19,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// The DC value.
         /// </value>
         [ParameterName("dc"), ParameterInfo("D.C. source value")]
-        public GivenParameter<double> DcValue { get; set; }
+        [Finite]
+        private GivenParameter<double> _dcValue;
 
         /// <summary>
         /// Gets or sets the waveform description.
@@ -36,7 +38,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// The small-signal magnitude.
         /// </value>
         [ParameterName("acmag"), ParameterInfo("AC magnitude value")]
-        public double AcMagnitude { get; set; }
+        [Finite]
+        private double _acMagnitude;
 
         /// <summary>
         /// Small-signal phase.
@@ -45,7 +48,8 @@ namespace SpiceSharp.Components.CommonBehaviors
         /// The small-signal phase.
         /// </value>
         [ParameterName("acphase"), ParameterInfo("AC phase value")]
-        public double AcPhase { get; set; }
+        [Finite]
+        private double _acPhase;
 
         /// <summary>
         /// Sets the small-signal parameters of the source.
@@ -87,6 +91,14 @@ namespace SpiceSharp.Components.CommonBehaviors
             Phasor = new Complex(
                 AcMagnitude * Math.Cos(phase),
                 AcMagnitude * Math.Sin(phase));
+        }
+
+        /// <inheritdoc/>
+        public override IndependentSourceParameters Clone()
+        {
+            var clone = base.Clone();
+            clone.Waveform = Waveform?.Clone();
+            return clone;
         }
     }
 }

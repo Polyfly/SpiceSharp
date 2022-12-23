@@ -1,4 +1,4 @@
-using SpiceSharp.ParameterSets;
+using SpiceSharp.Attributes;
 
 namespace SpiceSharp.Components.Mosfets.Level1
 {
@@ -7,10 +7,8 @@ namespace SpiceSharp.Components.Mosfets.Level1
     /// </summary>
     /// <seealso cref="Mosfets.ModelParameters"/>
     [GeneratedParameters]
-    public class ModelParameters : Mosfets.ModelParameters
+    public partial class ModelParameters : Mosfets.ModelParameters, ICloneable<ModelParameters>
     {
-        private GivenParameter<double> _lambda;
-
         /// <summary>
         /// Gets the channel length modulation parameter.
         /// </summary>
@@ -18,15 +16,11 @@ namespace SpiceSharp.Components.Mosfets.Level1
         /// The channel length modulation parameter.
         /// </value>
         [ParameterName("lambda"), ParameterInfo("Channel length modulation")]
-        [GreaterThanOrEquals(0)]
-        public GivenParameter<double> Lambda
-        {
-            get => _lambda;
-            set
-            {
-                Utility.GreaterThanOrEquals(value, nameof(Lambda), 0);
-                _lambda = value;
-            }
-        }
+        [GreaterThanOrEquals(0), Finite]
+        private GivenParameter<double> _lambda;
+
+        /// <inheritdoc/>
+        ModelParameters ICloneable<ModelParameters>.Clone()
+            => (ModelParameters)MemberwiseClone();
     }
 }

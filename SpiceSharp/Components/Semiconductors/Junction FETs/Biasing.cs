@@ -14,8 +14,9 @@ namespace SpiceSharp.Components.JFETs
     /// </summary>
     /// <seealso cref="Temperature"/>
     /// <seealso cref="IBiasingBehavior"/>
-    [BehaviorFor(typeof(JFET), typeof(IBiasingBehavior), 1)]
-    public class Biasing : Temperature,
+    [BehaviorFor(typeof(JFET)), AddBehaviorIfNo(typeof(IBiasingBehavior))]
+    [GeneratedParameters]
+    public partial class Biasing : Temperature,
         IBiasingBehavior
     {
         private readonly IIntegrationMethod _method;
@@ -323,27 +324,28 @@ namespace SpiceSharp.Components.JFETs
             var ceqgs = ModelParameters.JFETType * (cg - cgd - ggs * vgs);
             var cdreq = ModelParameters.JFETType * (cd + cgd - gds * vds - gm * vgs);
 
+            var m = Parameters.ParallelMultiplier;
             _elements.Add(
                 // Y-matrix
-                -gdpr,
-                -ggd,
-                -ggs,
-                -gspr,
-                -gdpr,
-                gm - ggd,
-                -gds - gm,
-                -ggs - gm,
-                -gspr,
-                -gds,
-                gdpr,
-                ggd + ggs,
-                gspr,
-                gdpr + gds + ggd,
-                gspr + gds + gm + ggs,
+                -gdpr * m,
+                -ggd * m,
+                -ggs * m,
+                -gspr * m,
+                -gdpr * m,
+                (gm - ggd) * m,
+                (-gds - gm) * m,
+                (-ggs - gm) * m,
+                -gspr * m,
+                -gds * m,
+                gdpr * m,
+                (ggd + ggs) * m,
+                gspr * m,
+                (gdpr + gds + ggd) * m,
+                (gspr + gds + gm + ggs) * m,
                 // RHS
-                -ceqgs - ceqgd,
-                -cdreq + ceqgd,
-                cdreq + ceqgs
+                (-ceqgs - ceqgd) * m,
+                (-cdreq + ceqgd) * m,
+                (cdreq + ceqgs) * m
                 );
         }
 

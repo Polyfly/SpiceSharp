@@ -9,8 +9,9 @@ namespace SpiceSharp.Components.CurrentSources
     /// </summary>
     /// <seealso cref="Biasing"/>
     /// <seealso cref="IAcceptBehavior"/>
-    [BehaviorFor(typeof(CurrentSource), typeof(IAcceptBehavior), 1)]
-    public class Accept : Biasing,
+    [BehaviorFor(typeof(CurrentSource)), AddBehaviorIfNo(typeof(IAcceptBehavior))]
+    [GeneratedParameters]
+    public partial class Accept : Biasing,
         IAcceptBehavior
     {
         /// <summary>
